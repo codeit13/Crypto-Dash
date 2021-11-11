@@ -1,0 +1,174 @@
+body {
+  background-color: rgb(220, 220, 220);
+  font-size: 15px;
+  line-height: 1.4;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Oxygen-Sans, Ubuntu, Cantarell, sans-serif;
+}
+
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+
+h3 {
+  margin: 40px 0 0;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+a {
+  color: #42b983;
+}
+
+.btn {
+  border-radius: 0.6em;
+  color: green;
+  cursor: pointer;
+  align-self: center;
+  padding: 1.2em 2.8em;
+  text-align: center;
+  font-weight: 700;
+}
+
+main {
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 100px;
+  box-shadow: 3px 3px 10px 1px #9f9f9f;
+}
+
+table {
+  width: 100%;
+}
+
+table tr {
+  text-align: center;
+}
+
+thead tr {
+  background-color: #ffffff;
+  font-weight: bold;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #f0eef0;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+th,
+td {
+  padding: 0 30px;
+  height: 40px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.invisible {
+  display: None;
+}
+
+.visible {
+  display: inline;
+}
+
+.nextButton {
+  float: right;
+  margin-right: 8px;
+}
+
+.buttonContainer {
+  background-color: #f0eef0;
+  width: 100%;
+  height: 40px;
+  margin-bottom: 50px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+button {
+  background-color: transparent;
+  border: 0px;
+  margin: 10px 5px 10px 10px;
+  border-radius: 0px;
+  font-weight: bold;
+  font-size: 0.9em;
+  height: 20px;
+  color: green;
+  cursor: pointer;
+  font-size: x-large;
+}
+
+@media all and (max-width: 500px) {
+  main {
+    margin-top: 40px;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  table,
+  thead,
+  tbody,
+  th,
+  td {
+    display: flex;
+    flex-flow: column nowrap;
+  }
+
+  td {
+    min-height: 40px;
+    vertical-align: middle;
+    flex-basis: 1;
+    margin: 5px 5px 0px 5px;
+    padding: 10px;
+  }
+
+  tr {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    min-height: 160px;
+  }
+
+  td:before {
+    padding-right: 10px;
+    font-weight: bold;
+  }
+
+  td:nth-of-type(1):before {
+    content: "💰 Coin";
+  }
+  td:nth-of-type(2):before {
+    content: "📄 Code";
+  }
+  td:nth-of-type(3):before {
+    content: "🤑 Price";
+  }
+  td:nth-of-type(4):before {
+    content: "📉 Total Supply";
+  }
+
+  thead tr {
+    position: absolute;
+    top: -10000px;
+    left: -10000px;
+  }
+}
+
+.flexbox {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
