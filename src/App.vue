@@ -18,8 +18,8 @@
           <tr v-for="coin in coinList" :key="coin.name">
             <td>{{ coin.name }}</td>
             <td>{{ coin.symbol }}</td>
-            <td>$ {{ (Math.round(coin.price * 100) / 100).toFixed(2) }}</td>
-            <td>1204.6B</td>
+            <td>${{ (Math.round(coin.price * 100) / 100).toFixed(2) }}</td>
+            <td>${{ this.numFormatter(coin.market_cap) }}</td>
             <td>
               <button
                 class="button add-to-wallet"
@@ -40,12 +40,22 @@
           <tr>
             <th>💰 Coin</th>
             <th>📄 Amount</th>
+            <th> Remove</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(key, coin) in wallet" :key="coin">
             <th>{{ coin }}</th>
             <td>{{ key }}</td>
+            <td>
+              <button
+                class="button remove-from-wallet"
+                :symbol="coin"
+                @click="removeFromWallet"
+              >
+                -
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -101,6 +111,15 @@ export default {
         this.wallet[symbol] += 1;
       } else {
         this.wallet[symbol] = 1;
+      }
+    },
+    removeFromWallet(event) {
+      let symbol = event.target.getAttribute("symbol");
+
+      this.wallet[symbol] -= 1;
+
+      if(this.wallet[symbol] < 1) {
+        delete this.wallet[symbol]
       }
     },
   },

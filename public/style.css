@@ -112,6 +112,10 @@ button {
   font-size: x-large;
 }
 
+.remove-from-wallet {
+  color: red;
+}
+
 @media all and (max-width: 500px) {
   main {
     margin-top: 40px;
