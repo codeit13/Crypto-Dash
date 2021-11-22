@@ -1,84 +1,88 @@
 <template>
-  <h1>Crypto Dashboard</h1>
-  <main class="flexbox">
-    <div>
-      <h1>Coins List</h1>
-
-      <table>
-        <thead>
-          <tr>
-            <th>💰 Coin</th>
-            <th>📄 Code</th>
-            <th>🤑 Price</th>
-            <th>📉 Market Cap</th>
-            <th>Add to Wallet</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="coin in coinList" :key="coin.name">
-            <td>{{ coin.name }}</td>
-            <td>{{ coin.symbol }}</td>
-            <td>${{ (Math.round(coin.price * 100) / 100).toFixed(2) }}</td>
-            <td>${{ this.numFormatter(coin.market_cap) }}</td>
-            <td>
-              <button
-                class="button add-to-wallet"
-                :symbol="coin.symbol"
-                @click="addToWallet"
-              >
-                +
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div>
-      <h1>Wallet</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>💰 Coin</th>
-            <th>📄 Amount</th>
-            <th> Remove</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(key, coin) in wallet" :key="coin">
-            <th>{{ coin }}</th>
-            <td>{{ key }}</td>
-            <td>
-              <button
-                class="button remove-from-wallet"
-                :symbol="coin"
-                @click="removeFromWallet"
-              >
-                -
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <main class="container mt-3">
+    <h1 class="text-center mb-5">Crypto Dashboard</h1>
+    <div class="d-flex justify-content-between">
+      <div>
+        <h2>Coins List</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>💰 Coin</th>
+              <th>📄 Code</th>
+              <th>🤑 Price</th>
+              <th>📉 Market Cap</th>
+              <th>Add to Wallet</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="coin in coinList" :key="coin.name">
+              <td>{{ coin.name }}</td>
+              <td>{{ coin.symbol }}</td>
+              <td>${{ (Math.round(coin.price * 100) / 100).toFixed(2) }}</td>
+              <td>${{ this.numFormatter(coin.market_cap) }}</td>
+              <td>
+                <i
+                  class="bi bi-bag-fill"
+                  :symbol="coin.symbol"
+                  @click="addToWallet(coin.symbol)"
+                ></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h2>Wallet</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>💰 Coin</th>
+              <th>📄 Amount</th>
+              <th>❌ Remove</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(coin, key) in wallet" :key="key">
+              <th>{{ coin.symbol }}</th>
+              <td>{{ coin.amount }}</td>
+              <td>
+                <i
+                  class="bi bi-dash-circle-fill"
+                  :symbol="coin"
+                  @click="removeFromWallet(coin.symbol)"
+                ></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </main>
 </template>
 
 <script>
 import axios from "axios";
-
 export default {
   name: "App",
   data() {
     return {
-      currencySymbol: "$",
       coinList: [],
-      wallet: {},
+      wallet: [],
     };
+  },
+  watch: {
+    wallet: {
+      deep: true,
+      handler(val) {
+        console.log("Wallet Data Member Updated: ", val);
+        localStorage.setItem("wallet", JSON.stringify(val));
+      },
+    },
   },
   mounted() {
     axios
       .get(
-        "https://coinlib.io/api/v1/coinlist?key=e55c57fc990bbb7a&page=0&limit=10"
+        "https://coinlib.io/api/v1/coinlist?key=af6791d15f46b44d&page=0&limit=10"
       )
       .then((data) => {
         let coinList = [];
@@ -90,6 +94,15 @@ export default {
           coinList[i]["market_cap"] = coin.market_cap;
         });
         this.coinList = coinList;
+        this.wallet = JSON.parse(
+          localStorage.getItem("wallet") == null
+            ? "[]"
+            : localStorage.getItem("wallet")
+        );
+      })
+      .catch((err) => {
+        console.log("API Limit Reached: ", err);
+        alert("API Limit Reached");
       });
   },
   methods: {
@@ -104,23 +117,47 @@ export default {
         return num;
       }
     },
-    addToWallet(event) {
-      let symbol = event.target.getAttribute("symbol");
-
-      if (symbol in this.wallet) {
-        this.wallet[symbol] += 1;
+    addToWallet(symbol) {
+      console.log("Add to Wallet Triggered: ", symbol);
+      if (this.wallet.length == null) {
+        // If wallet is empty
+        this.wallet.push({
+          symbol: symbol,
+          amount: 1,
+        });
       } else {
-        this.wallet[symbol] = 1;
+        // If wallet is not empty
+        let updateStatus = this.wallet.filter((coin) => {
+          console.log("Update: ", coin);
+          if (coin.symbol == symbol) {
+            // If coin already in wallet
+            coin.amount += 1;
+            return coin;
+          }
+        });
+        if (updateStatus.length == 0) {
+          // If coin is not already in wallet
+          this.wallet.push({
+            symbol: symbol,
+            amount: 1,
+          });
+        }
       }
     },
-    removeFromWallet(event) {
-      let symbol = event.target.getAttribute("symbol");
-
-      this.wallet[symbol] -= 1;
-
-      if(this.wallet[symbol] < 1) {
-        delete this.wallet[symbol]
-      }
+    removeFromWallet(symbol) {
+      console.log("Remove from Wallet Triggered: ", symbol);
+      this.wallet.filter((coin) => {
+        if (coin.symbol == symbol) {
+          coin.amount -= 1;
+          if (coin.amount <= 0) {
+            let index = this.wallet.findIndex((coin) => {
+              return coin.symbol == symbol;
+            });
+            this.wallet.splice(index, 1);
+          }
+          return coin;
+        }
+      });
     },
   },
 };
