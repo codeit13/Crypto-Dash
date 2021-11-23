@@ -31,6 +31,9 @@
           </tbody>
         </table>
       </div>
+      <!-- <div class="test">
+        {{ this.$store.state.wallet }}
+      </div> -->
       <div>
         <h2>Wallet</h2>
         <table class="table table-striped">
@@ -67,7 +70,6 @@ export default {
   data() {
     return {
       coinList: [],
-      wallet: [],
     };
   },
   watch: {
@@ -79,6 +81,11 @@ export default {
       },
     },
   },
+  computed: {
+    wallet() {
+      return this.$store.state.wallet;
+    }
+  },
   mounted() {
     axios
       .get(
@@ -86,15 +93,21 @@ export default {
       )
       .then((data) => {
         let coinList = [];
-        data.data.coins.forEach((coin, i) => {
-          coinList[i] = [];
-          coinList[i]["name"] = coin.name;
-          coinList[i]["symbol"] = coin.symbol;
-          coinList[i]["price"] = coin.price;
-          coinList[i]["market_cap"] = coin.market_cap;
+        data.data.coins.forEach((coin) => {
+          // coinList[i] = [];
+          // coinList[i]["name"] = coin.name;
+          // coinList[i]["symbol"] = coin.symbol;
+          // coinList[i]["price"] = coin.price;
+          // coinList[i]["market_cap"] = coin.market_cap;
+          coinList.push({
+            name: coin.name,
+            symbol: coin.symbol,
+            price: coin.price,
+            market_cap: coin.market_cap
+          })
         });
         this.coinList = coinList;
-        this.wallet = JSON.parse(
+        this.$store.state.wallet = JSON.parse(
           localStorage.getItem("wallet") == null
             ? "[]"
             : localStorage.getItem("wallet")
@@ -102,7 +115,6 @@ export default {
       })
       .catch((err) => {
         console.log("API Limit Reached: ", err);
-        alert("API Limit Reached");
       });
   },
   methods: {
@@ -119,45 +131,11 @@ export default {
     },
     addToWallet(symbol) {
       console.log("Add to Wallet Triggered: ", symbol);
-      if (this.wallet.length == null) {
-        // If wallet is empty
-        this.wallet.push({
-          symbol: symbol,
-          amount: 1,
-        });
-      } else {
-        // If wallet is not empty
-        let updateStatus = this.wallet.filter((coin) => {
-          console.log("Update: ", coin);
-          if (coin.symbol == symbol) {
-            // If coin already in wallet
-            coin.amount += 1;
-            return coin;
-          }
-        });
-        if (updateStatus.length == 0) {
-          // If coin is not already in wallet
-          this.wallet.push({
-            symbol: symbol,
-            amount: 1,
-          });
-        }
-      }
+      this.$store.dispatch('addToWallet', symbol);
     },
     removeFromWallet(symbol) {
       console.log("Remove from Wallet Triggered: ", symbol);
-      this.wallet.filter((coin) => {
-        if (coin.symbol == symbol) {
-          coin.amount -= 1;
-          if (coin.amount <= 0) {
-            let index = this.wallet.findIndex((coin) => {
-              return coin.symbol == symbol;
-            });
-            this.wallet.splice(index, 1);
-          }
-          return coin;
-        }
-      });
+      this.$store.dispatch('sellFromWallet', symbol);
     },
   },
 };
