@@ -7,28 +7,23 @@ export default createStore({
     wallet: []
   },
   actions: {
-    LoadOnStart({ state }) {
-      console.log("hjfjhhjdfh");
-      axios
-      .get(
-        "https://coinlib.io/api/v1/coinlist?key=af6791d15f46b44d&page=0&limit=10"
-      )
-      .then((data) => {
-        let coinList = [];
-        data.data.coins.forEach( (coin) => {
-          coinList.push({
-            name: coin.name,
-            symbol: coin.symbol,
-            price: coin.price,
-            market_cap: coin.market_cap
-          })
-        });
-        state.coinList = coinList;
-        state.wallet = JSON.parse( localStorage.getItem("wallet") == null ? "[]" : localStorage.getItem("wallet") );
-      })
-      .catch((err) => {
-        console.log("API Limit Reached: ", err);
-      });
+    async LoadOnStart({ state }) {
+      let { data } = await axios.get("https://coinlib.io/api/v1/coinlist?key=af6791d15f46b44d&page=0&limit=10")
+      console.log(data.coins);
+
+      let coinList = [];
+      for (let index in data.coins) {
+        let coin = data.coins[index]
+        coinList.push({
+          name: coin['name'],
+          symbol: coin['symbol'],
+          price: coin['price'],
+          market_cap: coin['market_cap']
+        })
+      }
+
+      state.coinList = coinList;
+      state.wallet = JSON.parse(localStorage.getItem("wallet") == null ? "[]" : localStorage.getItem("wallet"));
     },
     addToWallet({ state }, symbol) {
       if (state.wallet.length == null) {
@@ -72,7 +67,4 @@ export default createStore({
     }
   },
   modules: {}
-  // computed: mapState({
-  //   count: state => state.count,
-  // })
 })
