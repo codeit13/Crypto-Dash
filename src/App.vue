@@ -18,13 +18,13 @@
             <tr v-for="(coin, index) in coinList" :key="index">
               <td>{{ coin.name }}</td>
               <td>{{ coin.symbol }}</td>
-              <td>${{ (Math.round(coin.price * 100) / 100).toFixed(2) }}</td>
+              <td>${{ coin.price }}</td>
               <td>${{ this.numFormatter(coin.market_cap) }}</td>
               <td>
                 <i
                   class="bi bi-bag-fill"
                   :symbol="coin.symbol"
-                  @click="addToWallet(coin.symbol)"
+                  @click="addToWallet(coin.symbol, coin.price )"
                 ></i>
               </td>
             </tr>
@@ -32,7 +32,7 @@
         </table>
       </div>
       <div>
-        <h2>Wallet</h2>
+        <h2>Wallet <span>${{ balance }}</span></h2>
         <table class="table table-striped">
           <thead>
             <tr>
@@ -75,11 +75,15 @@ export default {
         localStorage.setItem("wallet", JSON.stringify(val));
       },
     },
+    balance(bal) {
+      localStorage.setItem("balance", bal);
+    }
   },
   computed: {
     ...mapState([
       'wallet',
-      'coinList'
+      'coinList',
+      'balance'
     ])
   },
   mounted() {
@@ -97,13 +101,20 @@ export default {
         return num;
       }
     },
-    addToWallet(symbol) {
-      console.log("Add to Wallet Triggered: ", symbol);
-      this.$store.dispatch('addToWallet', symbol);
+    addToWallet(symbol, price) {
+      console.log("BUY ", symbol, " AT ", price);
+      console.log("BALANCE & PRICE", this.balance, price);
+      if(parseFloat(this.balance) >= parseFloat(price))
+        this.$store.dispatch('addToWallet', {
+          symbol: symbol,
+          price: price
+        });
+      else
+        alert("Not Enough Balance");
     },
     removeFromWallet(symbol) {
-      console.log("Remove from Wallet Triggered: ", symbol);
-      this.$store.dispatch('sellFromWallet', symbol);
+      console.log("SELL ", symbol);
+        this.$store.dispatch('sellFromWallet', symbol);
     },
   },
 };
