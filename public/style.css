@@ -15,10 +15,12 @@ body {
   margin-top: 60px;
 }
 
-i{
-cursor: pointer;
+i {
+  cursor: pointer;
 }
 
-main {
-  box-shadow: 3px 3px 10px 1px #9f9f9f;
+@media (min-width: 740px) {
+  main {
+    box-shadow: 3px 3px 10px 1px #9f9f9f;
+  }
 }

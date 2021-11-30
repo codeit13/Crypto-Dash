@@ -1,23 +1,22 @@
 <template>
   <main class="container mt-3 p-5 pt-3">
-    <h1 class="text-center mb-5">Crypto Dashboard</h1>
+    <h1 class="mb-5">Crypto Dashboard</h1>
     <div class="d-flex justify-content-between">
       <div>
         <h2>Coins List</h2>
+        <input type="text" class="form-control" placeholder="Search here" @input="filterCoinList" v-model="search">
         <table class="table table-striped">
           <thead>
             <tr>
               <th>💰 Coin</th>
-              <th>📄 Code</th>
-              <th>🤑 Price</th>
+              <th>🤑 Price <span style="cursor: pointer;" @click="sortWithPrice">^</span> </th>
               <th>📉 Market Cap</th>
-              <th>Add to Wallet</th>
+              <th>Buy</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(coin, index) in coinList" :key="index">
-              <td>{{ coin.name }}</td>
-              <td>{{ coin.symbol }}</td>
+            <tr v-for="(coin, index) in filteredCoinList" :key="index">
+              <td>{{ coin.name }} <b>({{ coin.symbol }})</b></td>
               <td>${{ coin.price }}</td>
               <td>${{ this.numFormatter(coin.market_cap) }}</td>
               <td>
@@ -44,7 +43,7 @@
           <tbody>
             <tr v-for="(coin, key) in wallet" :key="key">
               <th>{{ coin.symbol }}</th>
-              <td>{{ coin.amount }}</td>
+              <td>${{ (coin.amount*coin.price).toFixed(2) }} <b>({{ coin.amount }})</b></td>
               <td>
                 <i
                   class="bi bi-dash-circle-fill"
@@ -65,7 +64,9 @@ import { mapState } from 'vuex'
 export default {
   name: "App",
   data() {
-    return {};
+    return {
+      search: ""
+    };
   },
   watch: {
     wallet: {
@@ -82,6 +83,7 @@ export default {
   computed: {
     ...mapState([
       'wallet',
+      'filteredCoinList',
       'coinList',
       'balance'
     ])
@@ -116,6 +118,14 @@ export default {
       console.log("SELL ", symbol);
         this.$store.dispatch('sellFromWallet', symbol);
     },
+    filterCoinList() {
+      this.$store.state.filteredCoinList = this.$store.state.coinList.filter((coin) => {
+        return coin.name.includes(this.search)
+      })
+    },
+    sortWithPrice() {
+
+    }
   },
 };
 </script>

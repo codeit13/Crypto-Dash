@@ -4,6 +4,7 @@ import axios from 'axios'
 export default createStore({
   state: {
     coinList: [],
+    filteredCoinList:[],
     wallet: [],
     balance: ""
   },
@@ -23,7 +24,7 @@ export default createStore({
         })
       }
 
-      state.coinList = coinList;
+      state.coinList = state.filteredCoinList = coinList;
       state.wallet = JSON.parse(localStorage.getItem("wallet") == null ? "[]" : localStorage.getItem("wallet"));
       state.balance = parseFloat(localStorage.getItem("balance") ? localStorage.getItem("balance") : 10000);
     },
