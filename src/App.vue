@@ -4,26 +4,37 @@
     <div class="d-flex justify-content-between">
       <div>
         <h2>Coins List</h2>
-        <input type="text" class="form-control" placeholder="Search here" @input="filterCoinList" v-model="search">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search here"
+          @input="filterCoinList"
+          v-model="search"
+        />
         <table class="table table-striped">
           <thead>
             <tr>
               <th>💰 Coin</th>
-              <th>🤑 Price <span style="cursor: pointer;" @click="sortWithPrice">^</span> </th>
+              <th>
+                🤑 Price
+                <span style="cursor: pointer" @click="sortWithPrice">^</span>
+              </th>
               <th>📉 Market Cap</th>
               <th>Buy</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(coin, index) in filteredCoinList" :key="index">
-              <td>{{ coin.name }} <b>({{ coin.symbol }})</b></td>
+              <td>
+                {{ coin.name }} <b>({{ coin.symbol }})</b>
+              </td>
               <td>${{ coin.price }}</td>
               <td>${{ this.numFormatter(coin.market_cap) }}</td>
               <td>
                 <i
                   class="bi bi-bag-fill"
                   :symbol="coin.symbol"
-                  @click="addToWallet(coin.symbol, coin.price )"
+                  @click="addToWallet(coin.symbol, coin.price)"
                 ></i>
               </td>
             </tr>
@@ -31,7 +42,9 @@
         </table>
       </div>
       <div>
-        <h2>Wallet <span>${{ balance }}</span></h2>
+        <h2>
+          Wallet <span>${{ balance }}</span>
+        </h2>
         <table class="table table-striped">
           <thead>
             <tr>
@@ -43,7 +56,10 @@
           <tbody>
             <tr v-for="(coin, key) in wallet" :key="key">
               <th>{{ coin.symbol }}</th>
-              <td>${{ (coin.amount*coin.price).toFixed(2) }} <b>({{ coin.amount }})</b></td>
+              <td>
+                ${{ (coin.amount * coin.price).toFixed(2) }}
+                <b>({{ coin.amount }})</b>
+              </td>
               <td>
                 <i
                   class="bi bi-dash-circle-fill"
@@ -60,12 +76,12 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 export default {
   name: "App",
   data() {
     return {
-      search: ""
+      search: "",
     };
   },
   watch: {
@@ -78,18 +94,13 @@ export default {
     },
     balance(bal) {
       localStorage.setItem("balance", bal);
-    }
+    },
   },
   computed: {
-    ...mapState([
-      'wallet',
-      'filteredCoinList',
-      'coinList',
-      'balance'
-    ])
+    ...mapState(["wallet", "filteredCoinList", "coinList", "balance"]),
   },
   mounted() {
-    this.$store.dispatch('LoadOnStart');
+    this.$store.dispatch("LoadOnStart");
   },
   methods: {
     numFormatter(num) {
@@ -106,26 +117,27 @@ export default {
     addToWallet(symbol, price) {
       console.log("BUY ", symbol, " AT ", price);
       console.log("BALANCE & PRICE", this.balance, price);
-      if(parseFloat(this.balance) >= parseFloat(price))
-        this.$store.dispatch('addToWallet', {
+      if (parseFloat(this.balance) >= parseFloat(price))
+        this.$store.dispatch("addToWallet", {
           symbol: symbol,
-          price: price
+          price: price,
         });
-      else
-        alert("Not Enough Balance");
+      else alert("Not Enough Balance");
     },
     removeFromWallet(symbol) {
       console.log("SELL ", symbol);
-        this.$store.dispatch('sellFromWallet', symbol);
+      this.$store.dispatch("sellFromWallet", symbol);
     },
     filterCoinList() {
-      this.$store.state.filteredCoinList = this.$store.state.coinList.filter((coin) => {
-        return coin.name.includes(this.search)
-      })
+      this.$store.state.filteredCoinList = this.$store.state.coinList.filter(
+        (coin) => {
+          return coin.name.toLowerCase().includes(this.search.toLowerCase()) || coin.symbol.toLowerCase().includes(this.search.toLowerCase());
+        }
+      );
     },
     sortWithPrice() {
-      this.$store.dispatch('sortWithPrice');
-    }
+      this.filteredCoinList = this.filteredCoinList.reverse();
+    },
   },
 };
 </script>
