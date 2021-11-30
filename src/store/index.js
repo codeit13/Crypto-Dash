@@ -28,6 +28,22 @@ export default createStore({
       state.wallet = JSON.parse(localStorage.getItem("wallet") == null ? "[]" : localStorage.getItem("wallet"));
       state.balance = parseFloat(localStorage.getItem("balance") ? localStorage.getItem("balance") : 10000);
     },
+    async sortWithPrice({ state }) {
+      let { data } = await axios.get("https://coinlib.io/api/v1/coinlist?key=af6791d15f46b44d&page=0&limit=10&order=price_dsc")
+
+      let filteredCoinList = [];
+      for (let index in data.coins) {
+        let coin = data.coins[index]
+        filteredCoinList.push({
+          name: coin['name'],
+          symbol: coin['symbol'],
+          price: (Math.round(coin['price'] * 100) / 100).toFixed(2),
+          market_cap: coin['market_cap']
+        })
+      }
+
+      state.filteredCoinList = filteredCoinList;
+    },
     addToWallet({ state }, { symbol, price },) {
       // If wallet is not empty
       let updateStatus = state.wallet.filter((coin) => {

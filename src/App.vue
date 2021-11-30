@@ -124,7 +124,7 @@ export default {
       })
     },
     sortWithPrice() {
-
+      this.$store.dispatch('sortWithPrice');
     }
   },
 };
