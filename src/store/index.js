@@ -4,9 +4,17 @@ import axios from 'axios'
 export default createStore({
   state: {
     coinList: [],
-    filteredCoinList:[],
+    filteredCoinList: [],
     wallet: [],
-    balance: ""
+    balance: "",
+    user: null
+  },
+  mutations: {
+    SET_USER_DATA(state, userData) {
+      state.user = userData
+      localStorage.setItem('user', JSON.stringify(userData))
+      axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`
+    }
   },
   actions: {
     async LoadOnStart({ state }) {
@@ -64,7 +72,25 @@ export default createStore({
           return coin;
         }
       });
+    },
+    async register({ commit }, credentials) {
+      return await axios
+        .post('//localhost:3000/register', credentials)
+        .then(({ data }) => {
+          commit('SET_USER_DATA', data)
+        })
+    },
+    async login({ commit }, credentials) {
+      return await axios
+        .post('//localhost:3000/login', credentials)
+        .then(({ data }) => {
+          commit('SET_USER_DATA', data)
+        })
     }
   },
-  modules: {}
+  getters: {
+    loggedIn(state) {
+      return !!state.user
+    }
+  }
 })
