@@ -6,22 +6,22 @@ const events = require('./db/events.json')
 var bodyParser = require('body-parser')
 const cors = require('cors');
 
+var PORT = 3000
+const SECRET_KEY = "__ONGRAPH__"
+
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+
 app.use(cors({
     origin: '*'
-}));
-
-var PORT = 3000
-const SECRET_KEY = "THE_SECRET_KEY"
+}
+));
 
 app.get('/', (req, res) => {
-    res.json({
-        message: 'Welcome to the API.'
-    })
+    res.send("Welcome to the API!")
 })
 
-app.get('/dashboard', verifyToken, (req, res) => {
+app.get('/getAll', verifyToken, (req, res) => {
     jwt.verify(req.token, SECRET_KEY, err => {
         if (err) {
             res.sendStatus(401)
@@ -53,15 +53,20 @@ app.post('/register', (req, res) => {
                 } else {
                     const token = jwt.sign({ user }, SECRET_KEY)
                     res.json({
-                        token,
-                        email: user.email,
-                        name: user.name
+                        token: {
+                            token,
+                            email: user.email,
+                            name: user.name
+                        },
+                        status: "OK"
                     })
                 }
             })
         }
     } else {
-        res.sendStatus(400)
+        res.json({
+            status: "NOT_OK"
+        })
     }
 })
 
@@ -75,12 +80,17 @@ app.post('/login', (req, res) => {
     ) {
         const token = jwt.sign({ userInfo }, SECRET_KEY)
         res.json({
-            token,
-            email: userInfo.email,
-            name: userInfo.name
+            token: {
+                token,
+                email: userInfo.email,
+                name: userInfo.name
+            },
+            status: "OK"
         })
     } else {
-        res.sendStatus(400)
+        res.json({
+            status: "NOT_OK"
+        })
     }
 })
 

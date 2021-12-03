@@ -13,10 +13,10 @@ export default {
   name: "App",
   mounted() {
     this.$store.dispatch("LoadOnStart");
-    if((localStorage.getItem('loggedIn') != 'true') || (localStorage.getItem('loggedIn') != '')) {
+    if (localStorage.getItem("user") == null) {
       this.$router.push({
-        name: 'Login'
-      })
+        name: "login",
+      });
     }
   },
 };
