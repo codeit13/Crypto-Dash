@@ -1,7 +1,7 @@
 <template>
-  <main>
-    <div className="d-flex">
+    <div className="d-flex justify-content-around">
       <div>
+        <h2>Login</h2>
         <form @submit.prevent="login">
           <div class="form-group">
             <label>Email</label>
@@ -25,6 +25,7 @@
         </form>
       </div>
       <div>
+        <h2>Register</h2>
         <form @submit.prevent="register">
           <div class="form-group">
             <label>Email</label>
@@ -48,7 +49,6 @@
         </form>
       </div>
     </div>
-  </main>
 </template>
 
 <script>
@@ -75,19 +75,19 @@ export default {
       }
     },
     async register() {
-      let status = this.$store.dispatch("register", {
+      let status = await this.$store.dispatch("register", {
         name: this.name,
         email: this.email,
         password: this.password,
       });
 
       if (status == "NOT_OK") {
-        this.$router.push({ name: "dashboard" });
+        alert("This user already exists!");
+        this.$router.push({ name: "login" });
+      } else {
+        this.$router.push({ name: "home" });
       }
     },
   },
 };
 </script>
-
-<style>
-</style>

@@ -74,15 +74,17 @@ export default createStore({
       });
     },
     async register({ commit }, credentials) {
-      return await axios
-        .post('http://localhost:3000/register', credentials)
-        .then(({ data }) => {
-          commit('SET_USER_DATA', data.token)
-        })
+      let { data } = await axios.post('http://localhost:3001/register', credentials)
+
+      if (data.status == "OK") {
+        commit('SET_USER_DATA', data.token)
+      } else {
+        return data.status;
+      }
     },
     async login({ commit }, credentials) {
       console.log("ASYNC LOGIN ");
-      let { data } = await axios.post('http://localhost:3000/login', credentials)
+      let { data } = await axios.post('http://localhost:3001/login', credentials)
 
       if (data.status == "OK") {
         commit('SET_USER_DATA', data.token)
