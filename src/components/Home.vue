@@ -17,6 +17,8 @@ export default {
   name: "App",
   mounted() {
     this.$store.dispatch("LoadOnStart");
+    let user = JSON.parse(localStorage.getItem("user"));
+    this.$store.dispatch("getLoginDetails", user);
   },
 };
 </script>

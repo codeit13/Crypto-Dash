@@ -3,17 +3,20 @@ import axios from 'axios'
 
 export default createStore({
   state: {
+    backendUrl: "https://7921-2409-4053-e81-1190-8e0a-786c-4659-889c.ngrok.io/",
     coinList: [],
     filteredCoinList: [],
     wallet: [],
     balance: "",
-    user: null
+    user: null,
+    loggedInUserEmail: ""
   },
   mutations: {
     SET_USER_DATA(state, userData) {
-      state.user = userData
-      localStorage.setItem('user', JSON.stringify(userData))
-      axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`
+      console.log(userData);
+      state.user = userData.token
+      state.loggedInUserEmail = userData.email 
+      localStorage.setItem('user', JSON.stringify(userData.token))
     }
   },
   actions: {
@@ -73,23 +76,33 @@ export default createStore({
         }
       });
     },
-    async register({ commit }, credentials) {
-      let { data } = await axios.post('http://localhost:3001/register', credentials)
+    async register({ state, commit }, credentials) {
+      let { data } = await axios.post(state.backendUrl + 'register', credentials)
 
       if (data.status == "OK") {
-        commit('SET_USER_DATA', data.token)
+        commit('SET_USER_DATA', data)
       } else {
         return data.status;
       }
     },
-    async login({ commit }, credentials) {
+    async login({ state, commit }, credentials) {
       console.log("ASYNC LOGIN ");
-      let { data } = await axios.post('http://localhost:3001/login', credentials)
+      let { data } = await axios.post(state.backendUrl + 'login', credentials)
 
       if (data.status == "OK") {
-        commit('SET_USER_DATA', data.token)
+        commit('SET_USER_DATA', data)
       } else {
         return data.status;
+      }
+    },
+    async getLoginDetails({ state }, token) {
+      console.log("ASYNC LOGIN ");
+      let { data } = await axios.post(state.backendUrl + 'getTokenDetails', token)
+
+      if (data.status == "OK") {
+        state.loggedInUserEmail = data.token.email;
+      } else {
+        state.loggedInUserEmail = data.token.email;
       }
     }
   },

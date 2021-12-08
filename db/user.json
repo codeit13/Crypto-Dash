@@ -1,4 +1,20 @@
 {
-  "email": "cosmictunnel36@gmail.com",
-  "password": "123456"
+  "users": [
+    {
+      "email": "cosmictunnel376@gmail.com",
+      "password": "123456"
+    },
+    {
+      "email": "karan@mallss",
+      "password": "sdsdds"
+    },
+    {
+      "email": "sdsdssds",
+      "password": "dsdssdsd"
+    },
+    {
+      "email": "karan@mall91.com",
+      "password": "1234567"
+    }
+  ]
 }
